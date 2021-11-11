@@ -1,317 +1,254 @@
-import numpy as np
+from tqdm import tqdm
 from collections import defaultdict as dd
 from itertools import combinations as subset
-from tqdm import tqdm
 import time
+import numpy as np
+import random
+import math
 
-
-class t_node:
-    def __init__(self,item,parent=None,count=0):
-        self.item = item
-        self.parent = parent
-        self.count = count
-        self.children = []
-        self.vis = False
-
-    def printnode():
-        print(item)
-        print(parent)
-        print(count)
-        print(children)
-
-class l_node:
-    def __init__(self, t_node, next=None):
-        self.t_node = t_node
-        self.next = next
-
-    def printnode():
-        self.t_node.printnode()
-
-class link:
+class linked_NODE:
     def __init__(self):
         self.head = None
 
-    def add(self,t_node):
-        if self.head == None:
-            self.head = l_node(t_node)
+    def deleteNode(self):
+        self.head = None
+
+    def add(self,t_NODE):
+        if self.head != None:
+            newNode = l_NODE(t_NODE = t_NODE,next = self.head.next)
+            self.head.next = newNode
         else:
-            tempNode = l_node(t_node,self.head.next)
-            self.head.next = tempNode
+            self.head = l_NODE(t_NODE = t_NODE, next = None)
 
-    def printnode():
-        self.head.printnode()
 
-class pattern_base:
-    def __init__(self, min_sup, top_down=False,pre_defined=[],top_level=True):
-        self.transactions = []
-        self.transactions_original = []
+class l_NODE:
+    def __init__(self, t_NODE, next):
+        self.t_NODE = t_NODE
+        self.next = next
+
+    def deleteNode(self):
+        self.head = None
+
+class t_NODE:
+    def __init__(self,item,source=None,cnt=0):
+        self.setParent(source)
+        self.item = item
+        self.offspring = []
+        self.cnt = cnt
+
+    def setParent(self,source):
+        self.source = source
+
+    def deleteNode(self):
+        self.head = None
+
+class patternBase:
+    def __init__(self, minsupp, preDef=[],top_level=True):
+        
+        self.preDef = preDef
+        self.trans = []
+        
+        self.head = t_NODE(None)
+        self.trans_org = []
+        
+        self.minSUP = minsupp
         self.tr_cnt = []
+        
+        self.freqA = dd(int)
         self.tr_cnt_org = []
-        self.pre_defined = pre_defined
-        self.head = t_node(None)
-        self.MINSUP = min_sup
-        self.freqA = dd(int)
-        self.top_down = top_down
+
         self.top_level = top_level
-
-    def add(self,t,tc):
-        self.transactions.append(t)
-        self.transactions_original.append(t)
-        self.tr_cnt.append(tc)
-        self.tr_cnt_org.append(tc)
     
-    # def gen_list_f1(self):
-    #     self.freqA = dd(int)
-    #     for i,t in enumerate(self.transactions_original):
-    #         for item in t:
-    #             self.freqA[item] += self.tr_cnt_org[i]
-    #     self.freqA = {k: v for k, v in sorted(self.freqA.items(), key=lambda item: item[1], reverse=True)}
 
-    # def filter_transactions(self):
-    #     # self.gen_list_f1()
-
-    #     self.freqA = dd(int)
-    #     for i,t in enumerate(self.transactions_original):
-    #         for item in t:
-    #             self.freqA[item] += self.tr_cnt_org[i]
-    #     self.freqA = {k: v for k, v in sorted(self.freqA.items(), key=lambda item: item[1], reverse=True)}
-
-
-    #     self.transactions = []
-    #     self.tr_cnt = []
-
-    #     for i,t in enumerate(self.transactions_original):
-    #         new_trans = []
-    #         for item in t:
-    #             if self.freqA[item] >= self.MINSUP:
-    #                 new_trans.append(item)
-    #         if len(new_trans) != 0:
-    #             new_trans = sorted(new_trans, key=lambda x: self.freqA[x], reverse=True)
-    #             self.transactions.append(new_trans)
-    #             self.tr_cnt.append(self.tr_cnt_org[i])
-    #     self.freqA = [[k,v] for k,v in self.freqA.items() if v>=self.MINSUP]
-    #     if not self.top_down:
-    #         self.freqA.reverse()
-    #     self.headers = {k:link() for k,v in self.freqA}
-    #     self.conditional_patterns = {k:pattern_base(self.MINSUP,self.top_down,[k]+self.pre_defined,False) for k,v in self.freqA}
-
-    def get_next(self,current,item):
-        for c in current.children:
-            if c.item == item:
-                return c
-        tempNode = t_node(item,current)
-        current.children.append(tempNode)
-        self.headers[item].add(tempNode)
-        return tempNode
-    
-    # def add_trans_to_tree(self,trans,count):
-    #     current = self.head
-    #     for item in trans:
-    #         current = self.get_next(current,item)
-    #         current.count += count
-
-
-    def gen_fp_tree(self):
-        # self.filter_transactions()
-
-
-        #####################################
-
-        self.freqA = dd(int)
-        for i,t in enumerate(self.transactions_original):
-            for item in t:
-                self.freqA[item] += self.tr_cnt_org[i]
-        self.freqA = {k: v for k, v in sorted(self.freqA.items(), key=lambda item: item[1], reverse=True)}
-
-
-        self.transactions = []
-        self.tr_cnt = []
-
-        for i,t in enumerate(self.transactions_original):
-            new_trans = []
-            for item in t:
-                if self.freqA[item] >= self.MINSUP:
-                    new_trans.append(item)
-            if len(new_trans) != 0:
-                new_trans = sorted(new_trans, key=lambda x: self.freqA[x], reverse=True)
-                self.transactions.append(new_trans)
-                self.tr_cnt.append(self.tr_cnt_org[i])
-        self.freqA = [[k,v] for k,v in self.freqA.items() if v>=self.MINSUP]
-        if not self.top_down:
-            self.freqA.reverse()
-        self.headers = {k:link() for k,v in self.freqA}
-        self.conditional_patterns = {k:pattern_base(self.MINSUP,self.top_down,[k]+self.pre_defined,False) for k,v in self.freqA}
-
-        #####################################
-
-
-
-        self.head = t_node(None)
-        for i,trans in enumerate(self.transactions):
-            # self.add_trans_to_tree(trans,self.tr_cnt[i])
-
-            ##############################
-
-
-            count = self.tr_cnt[i]
-            current = self.head
-            for item in trans:
-                current = self.get_next(current,item)
-                current.count += count
-
-
-
-            ##############################
-
-    def check_if_single_path(self):
-        current = self.head
-        while True:
-            child_count = len(current.children)
-            if child_count == 0: 
-                return True
-            if child_count > 1:
+    def checkSinglePath(self):
+        cr = self.head
+        while 1>0:
+            cc = len(cr.offspring)
+            if cc > 1:
                 return False
-            current = current.children[0]
-
-    # def single_path_results(self):
-    #     results = []
-    #     current = self.head
-    #     path = []
-    #     count = dd(int)
-    #     while len(current.children) != 0:
-    #         current = current.children[0]
-    #         path.append(current.item)
-    #         count[current.item] = current.count
-    #     for size in range(1,len(path)+1):
-    #         combination = subset(path,size)
-    #         for comb in combination:
-    #             comb_count = min([count[item] for item in comb])
-    #             results.append((list(comb)+self.pre_defined,comb_count))
-    #     return results
+            elif cc == 0: 
+                return True
             
+            cr = cr.offspring[0]
 
-    def get_conditional_pattern(self,t_node):
-        current = t_node.parent
-        suffix = []
-        while current.item is not None:
-            suffix.append(current.item)
-            current = current.parent
-        suffix.reverse()
-        return suffix
-
-    def explore(self,t_node,ai, prefix=[]):
-        child_count = 0
-
-        prefix = prefix + [t_node.item]
-        for child in t_node.children:
-            child_count += child.count
-            self.explore(child,ai,prefix)
-        if t_node.count > child_count:
-            self.conditional_patterns[ai].add(prefix,t_node.count - child_count)
     
-    def get_conditional_pattern_top_down(self,t_node,ai):
-        results = []
-        for child in t_node.children:
-            self.explore(child,ai)
 
-    def mine_fq_itemsets(self):
-        self.gen_fp_tree()
-        if not self.head.children:
-            return []    
-        results = []
-        if self.check_if_single_path():
-            # return self.single_path_results()
-            # results = []
-            current = self.head
-            p = []
-            count = dd(int)
-            while len(current.children) != 0:
-                current = current.children[0]
-                p.append(current.item)
-                count[current.item] = current.count
-            for size in range(1,len(p)+1):
-                combination = subset(p,size)
-                for comb in combination:
-                    comb_count = min([count[item] for item in comb])
-                    results.append((list(comb)+self.pre_defined,comb_count))
-            return results
+
+    def generateFPTree(self):
+        self.freqA = dd(int)
+        self.trans = []
+        self.tr_cnt = []
+        for i,tr in enumerate(self.trans_org):
+            for j in tr:
+                self.freqA[j] = self.freqA[j] + self.tr_cnt_org[i]
+
+        newTrans = sorted(self.freqA.items(), key=lambda item: item[1], reverse=True)
+
+        self.freqA = {ky:val for ky,val in newTrans}
+        
+        
+        for i,tr in enumerate(self.trans_org):
+            newTR = []
+            for item in tr:
+                if self.minSUP > self.freqA[item]:
+                    pass
+                else:
+                    newTR.append(item)
+            l = len(newTR) 
+            if l == 0:
+                pass 
+            else:
+                # newTR = sorted(newTR, key=lambda x: self.freqA[x], reverse=True)
+                self.trans.append(sorted(newTR, key=lambda x: self.freqA[x], reverse=True))
+                self.tr_cnt.append(self.tr_cnt_org[i])
+                l = len(newTR)
+
+        self.freqA = [[ky,val] for ky,val in self.freqA.items() if self.minSUP <= val]
+        self.freqA.reverse()
+        self.headers = {ky:linked_NODE() for ky,val in self.freqA}
+        l = -1
+
+
+        self.condPat = {ky:patternBase(self.minSUP,[ky]+self.preDef,False) for ky,val in self.freqA}
+        self.head = t_NODE(None)
+        for i,tr in enumerate(self.trans):
+            c = self.tr_cnt[i]
+            cr = self.head
+            for i in tr:
+                cr = self.generateNext(cr,i)
+                cr.cnt = cr.cnt + c
+
+    
+
+    def ansSinglePath(self):
+        way = []
+        cr = self.head
+        cnt = dd(int)
+        l = len(cr.offspring)
+        if l!=0:
+            while 1>0:
+                cr = cr.offspring[0]
+                way.append(cr.item)
+                cnt[cr.item] = cr.cnt
+                l = len(cr.offspring)
+
+                if l==0:
+                    break
+        
+        ans = []
+
+        for sz in range(1,len(way)+1):
+            c1 = subset(way,sz)
+            for c2 in c1:
+                ans.append((list(c2)+self.preDef,min([cnt[i] for i in c2])))
+        return ans
+
+    def explore(self,t_NODE, it, pf=[]):
+        
+        pf = pf + [t_NODE.item]
+        cc = 0
+        for c in t_NODE.offspring:
+            cc = cc + c.cnt
+            self.explore(c,it,pf)
+        if t_NODE.cnt > cc:
+            pass 
         else:
-            it = self.freqA
+            self.condPat[it].add(pf,t_NODE.cnt - cc)
+
+    def mineFrequentItemsets(self):
+        self.generateFPTree()
+        ans = []
+        if not self.head.offspring:
+            return ans
+        if self.checkSinglePath() == False:
+            itr = []
             if self.top_level:
-                it = tqdm(it)
-            for ai,c in it:
-                results.append(([ai]+self.pre_defined,c))
-                lNode = self.headers[ai].head
-                while lNode is not None:
-                    t_node = lNode.t_node
-                    if self.top_down == False:
-                        trans = self.get_conditional_pattern(t_node)
-                        if len(trans) == 0:
+                temp = self.freqA
+                itr = tqdm(temp)
+            else:
+                itr = self.freqA
+            for it, cnt in itr:
+                v = [it]+self.preDef
+                ans.append((v,cnt))
+                LNode = self.headers[it].head
+                if LNode == None:
+                    pass
+                else:
+                    while 1>0:
+                        t_NODE = LNode.t_NODE
+                        sf = []
+                        cr = t_NODE.source
+                        
+                        while cr.item is not None:
+                            sf.append(cr.item)
+
+                            cr = cr.source
+                        sf.reverse()
+                        tr = sf
+                        l = len(tr)
+
+                        if l == 0:
                             pass
                         else:
-                            self.conditional_patterns[ai].add(trans,t_node.count)
-                    else:
-                        multiple_trans = self.get_conditional_pattern_top_down(t_node,ai)
-                    lNode = lNode.next
-                if self.conditional_patterns[ai].transactions:
-                    results.extend(self.conditional_patterns[ai].mine_fq_itemsets())
-        return results
+                            self.condPat[it].add(tr,t_NODE.cnt)
+                        LNode = LNode.next
+                        if LNode == None:
+                            break
+                if self.condPat[it].trans:
+                    ans.extend(self.condPat[it].mineFrequentItemsets())
+        else:
+            return self.ansSinglePath()
+        return ans
+
+    def generateNext(self,cr,item):
+        
+        for c in cr.offspring:
+            if c.item != item:
+                pass
+            else:
+                return c
+
+        newNode = t_NODE(item = item, source = cr)
+        cr.offspring.append(newNode)
+        self.headers[item].add(newNode)
+        return newNode
+
+    def add(self,tr,tc):
+        self.trans_org.append(tr)
+        self.trans.append(tr)
+        self.addCount(tc)
+
+    def addCount(self,tc):
+        self.tr_cnt.append(tc)
+        self.tr_cnt_org.append(tc)
 
 
-with open('BMS1_spmf.txt', 'r') as f:
-    D = f.readlines()
-
-D = [line[:-7].split(' -1 ') for line in D]
-
-D = [list(set(line)) for line in D]
-
-l = len(D)
-
-
-MINIMUM_SUP = 0.01
-MINSUP = int(MINIMUM_SUP*l)
 
 
 
-def basic_FP_growth():
-    print("Running Basic FP Growth")
+def basicFPGrowth():
+    with open('BMS1_spmf.txt', 'r') as file:
+        D = file.readlines()
+    D = [l[:-7].split(' -1 ') for l in D]
+    D = [list(set(l)) for l in D]
+
+    ln = len(D)
+
+    MINSUPPORT = int(0.01*ln)
+
+
+    print(" ----- Running Basic FP Growth ----- ")
     start=time.time()
+    base = patternBase(MINSUPPORT)
+    for tr in D:
+        base.add(list(set(tr)),1)
 
-    initial_base = pattern_base(MINSUP)
-
-    for t in D:
-        t = list(set(t))
-        initial_base.add(t,1)
-
-    F = initial_base.mine_fq_itemsets()
-    F = sorted(F,key=lambda x: (len(x[0]),x[1]))
-
+    # output = base.mineFrequentItemsets()
+    output = sorted(base.mineFrequentItemsets(),key=lambda x: (len(x[0]),x[1]))
     end=time.time()
-    print("Frequent ItemSets for FP Growth with Top Down Projection")
-    print(F)
-    print("Total time taken : " + str(end-start) + "\n\n ------------------ \n\n")
+    print("Frequent ItemSets for FP Growth :")
+    print('\n'.join(map(str, output)))
+    print("\nTotal time taken = " + str(end-start) + "\n\n------------------ \n\n")
 
 
-def FP_growth_topDown_projection():
-    print("Running FP Growth with top down projection")
-
-    start = time.time()
-    initial_base_topdown = pattern_base(MINSUP,True)
-
-    for trans in D:
-        initial_base_topdown.add(trans,1)
-
-    F_topdown = initial_base_topdown.mine_fq_itemsets()
-    F_topdown = sorted(F_topdown,key=lambda x: (len(x[0]),x[1]))
-
-    end=time.time()
-    print(" Frequent ItemSets for FP Growth with Top Down Projection")
-    print(F_topdown)
-    print("Total time taken : " + str(end-start) + "\n\n ------------------ \n\n")
-
-
-basic_FP_growth()
-FP_growth_topDown_projection()
-
-
-
+basicFPGrowth()
