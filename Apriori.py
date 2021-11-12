@@ -72,11 +72,10 @@ def generateApriori(L_k):
                         C_k.append(c)
     return C_k
 
-file = 'MSNBC.txt'
-with open(file, 'r') as fname:
+with open('BMS1_spmf.txt', 'r') as fname:
     data = fname.readlines()
 
-MINIMUM_SUP = 0.1
+MINIMUM_SUP = 0.01
 
 
 D = [line[:-7].split(' -1 ') for line in data]
@@ -95,9 +94,8 @@ for i in range(l):
     D[i]=set(D[i])
 
 
-print('\t'+file)
 def basic_apriori():
-    # print(" ----- Running Basic Apriori ----- ")
+    print(" ----- Running Basic Apriori ----- ")
     start = time.time()
     d = defaultdict(lambda: 0)
     L_k=[]
@@ -131,10 +129,9 @@ def basic_apriori():
         if not L_k:
             break
     end = time.time()
-    # print("Frequent ItemSets for Basic Apriori :")
-    # print('\n'.join(map(str, F)))
-    # print("\nTotal time taken for Basic Apriori: " + str(end-start) + "\n\n------------------ \n\n")
-    print("\t\tTotal time taken for Basic Apriori= " + str(end-start) + " seconds")
+    print("Frequent ItemSets for Basic Apriori :")
+    print('\n'.join(map(str, F)))
+    print("\nTotal time taken for Basic Apriori= " + str(end-start) + "\n\n------------------ \n\n")
 
 def apriori_with_hash_mapping():
     # print(" ----- Running Apriori with Hash Mapping ----- ")
@@ -173,11 +170,9 @@ def apriori_with_hash_mapping():
             break
 
     end = time.time()
-    # print("Frequent ItemSets for Apriori with Hash Mapping:")
-    # print('\n'.join(map(str, F)))
-    # print('')
-    # print("\nTotal time taken for Apriori with Hash Mapping= " + str(end-start) + "\n\n------------------ \n\n")
-    print("\t\tTotal time taken for Apriori with Hash Mapping= " + str(end-start) + " seconds")
+    print("Frequent ItemSets for Apriori with Hash Mapping:")
+    print('\n'.join(map(str, F)))
+    print("\nTotal time taken for Apriori with Hash Mapping= " + str(end-start) + "\n\n------------------ \n\n")
 
 basic_apriori()
 apriori_with_hash_mapping()

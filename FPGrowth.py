@@ -227,28 +227,26 @@ class patternBase:
 
 
 def basicFPGrowth():
-    with open('MSNBC.txt', 'r') as file:
+    with open('BMS1_spmf.txt', 'r') as file:
         D = file.readlines()
     D = [l[:-7].split(' -1 ') for l in D]
     D = [list(set(l)) for l in D]
 
     ln = len(D)
 
-    MINSUPPORT = int(0.1*ln)
+    MINSUPPORT = int(0.01*ln)
 
 
-    # print(" ----- Running Basic FP Growth ----- ")
+    print(" ----- Running Basic FP Growth ----- ")
     start=time.time()
     base = patternBase(MINSUPPORT)
     for tr in D:
         base.add(list(set(tr)),1)
 
-    # output = base.mineFrequentItemsets()
     output = sorted(base.mineFrequentItemsets(),key=lambda x: (len(x[0]),x[1]))
     end=time.time()
-    # print("Frequent ItemSets for FP Growth :")
-    # print('\n'.join(map(str, output)))
-    # print("\nTotal time taken for FP Growth= " + str(end-start) + "\n\n------------------ \n\n")
-    print("\t\tTotal time taken for FP Growth= " + str(end-start) + " seconds")
+    print("Frequent ItemSets for FP Growth :")
+    print('\n'.join(map(str, output)))
+    print("\nTotal time taken for FP Growth= " + str(end-start) + "\n\n------------------ \n\n")
 
 basicFPGrowth()
