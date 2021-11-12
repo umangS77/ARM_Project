@@ -72,11 +72,11 @@ def generateApriori(L_k):
                         C_k.append(c)
     return C_k
 
-
-with open('BMS1_spmf.txt', 'r') as fname:
+file = 'MSNBC.txt'
+with open(file, 'r') as fname:
     data = fname.readlines()
 
-MINIMUM_SUP = 0.01
+MINIMUM_SUP = 0.1
 
 
 D = [line[:-7].split(' -1 ') for line in data]
@@ -95,9 +95,9 @@ for i in range(l):
     D[i]=set(D[i])
 
 
-
+print('\t'+file)
 def basic_apriori():
-    print(" ----- Running Basic Apriori ----- ")
+    # print(" ----- Running Basic Apriori ----- ")
     start = time.time()
     d = defaultdict(lambda: 0)
     L_k=[]
@@ -131,70 +131,13 @@ def basic_apriori():
         if not L_k:
             break
     end = time.time()
-    print("Frequent ItemSets for Basic Apriori :")
-    print('\n'.join(map(str, F)))
-    print("\nTotal time taken : " + str(end-start) + "\n\n------------------ \n\n")
-
-# def apriori_with_transaction_red():
-#     print(" ----- Running Apriori with Transaction Reduction ----- ")
-#     start = time.time()
-    
-#     D_new=D
-#     L_k=[]
-#     F=[]
-
-#     d = defaultdict(lambda: 0)
-#     for trans in D_new:
-#         for item in trans:
-#             d[item] = d[item] + 1
-    
-#     for k, v in d.items():
-#         if v<MINSUP:
-#             pass
-#         else:
-#             L_k.append([k])
-#             F.append(tuple([k]))
-
-#     while True:
-#         D2 = D_new
-
-#         D_temp=[]
-#         for t in D2:
-#             for i in L_k:
-#                 if set(i) <= t:
-#                     D_temp.append(t)
-#                     break
-#         D_new = D_temp
-
-#         C_k = generateApriori(L_k)
-
-#         cnt = defaultdict(lambda: 0)
-        
-#         for t in D_new:
-#             C_t = generateSubsets(C_k, t)
-#             for i in C_t:
-#                 cnt[i] = cnt[i] + 1
-#         L_k=[]
-
-#         for i, v in cnt.items():
-#             if v<MINSUP:
-#                 pass
-#             else:
-#                 L_k.append(list(i))
-#                 F.append(i)
-#         if L_k:
-#             pass
-#         else:
-#             break
-
-#     end = time.time()
-#     print("Frequent ItemSets for Apriori with Transaction Reduction")
-#     print(F)
-#     print("Total time taken : " + str(end-start) + "\n\n------------------ \n\n")
-
+    # print("Frequent ItemSets for Basic Apriori :")
+    # print('\n'.join(map(str, F)))
+    # print("\nTotal time taken for Basic Apriori: " + str(end-start) + "\n\n------------------ \n\n")
+    print("\t\tTotal time taken for Basic Apriori= " + str(end-start) + " seconds")
 
 def apriori_with_hash_mapping():
-    print(" ----- Running Apriori with Hash Mapping ----- ")
+    # print(" ----- Running Apriori with Hash Mapping ----- ")
     check=True
     start = time.time()
 
@@ -230,67 +173,12 @@ def apriori_with_hash_mapping():
             break
 
     end = time.time()
-    print("Frequent ItemSets for Apriori with Hash Mapping:")
-    print('\n'.join(map(str, F)))
-    print("\nTotal time taken = " + str(end-start) + "\n\n------------------ \n\n")
-
-
-
-# def apriori_with_hash_mapping_and_trans_red():
-#     print(" ----- Running Apriori with Hash Mapping and Transaction Reduction ----- ")
-#     check=True
-
-#     start = time.time()
-
-#     D_new = D
-#     L_k, F, hs= find_frequent_1_itemsets_hash(D_new, MINSUP)
-    
-#     while True:
-#         D2 = D_new
-#         cnt = defaultdict(lambda: 0)
-
-#         D_temp=[]
-#         for t in D2:
-#             for i in L_k:
-#                 if set(i) <= t:
-#                     D_temp.append(t)
-#                     break
-#         D_new = D_temp
-        
-#         C_k = generateApriori(L_k)
-
-#         if not check:
-#             for t in D_new:
-#                 C_t = generateSubsets(C_k, t)
-#                 for c in C_t:
-#                     cnt[c] = cnt[c] + 1
-#             L_k=[]
-#             for k, v in cnt.items():
-#                 if v<MINSUP:
-#                     pass
-#                 else:
-#                     L_k.append(list(k))
-#                     F.append(k)
-#         else:
-#             check = False
-#             for c in C_k:
-#                 if tuple(c) not in hs:
-#                     pass
-#                 else:
-#                     F.append(tuple(c))
-#             L_k = [ c for c in C_k if tuple(c) in hs]
-            
-#         if not L_k:
-#             break
-
-#     end = time.time()
-#     print("Frequent ItemSets for Apriori with Hash Mapping and Transaction Reduction : ")
-#     print(F)
-#     print("Total time taken = " + str(end-start) + "\n\n------------------ \n\n")
+    # print("Frequent ItemSets for Apriori with Hash Mapping:")
+    # print('\n'.join(map(str, F)))
+    # print('')
+    # print("\nTotal time taken for Apriori with Hash Mapping= " + str(end-start) + "\n\n------------------ \n\n")
+    print("\t\tTotal time taken for Apriori with Hash Mapping= " + str(end-start) + " seconds")
 
 basic_apriori()
-# apriori_with_transaction_red()
 apriori_with_hash_mapping()
-# apriori_with_hash_mapping_and_trans_red()
-
 

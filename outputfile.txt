@@ -1,0 +1,56 @@
+For Minimum Support = 1%:
+
+	BMS1_spmf.txt:
+		Total time taken for Basic Apriori= 74.7482898235321 seconds
+		Total time taken for Apriori with Hash Mapping= 1.3318769931793213 seconds
+		Total time taken for FP Growth= 1.0110151767730713 seconds
+
+	BMS2_spmf.txt:
+		Total time taken for Basic Apriori= 66.2326180934906 seconds
+		Total time taken for Apriori with Hash Mapping= 5.244940757751465 seconds
+		Total time taken for FP Growth= 1.2578978538513184 seconds
+
+	MSNBC.txt:
+		Total time taken for Basic Apriori= 153.68514347076416 seconds
+		Total time taken for Apriori with Hash Mapping= 154.7875907421112 seconds
+		Total time taken for FP Growth= 1.497495412826538 seconds
+
+-------------------------------------------------------------------------------------
+
+For Minimum Support = 5%:
+
+	BMS1_spmf.txt:
+		Total time taken for Basic Apriori= 0.28157925605773926 seconds
+		Total time taken for Apriori with Hash Mapping= 1.2909183502197266 seconds
+		Total time taken for FP Growth= 0.3462948799133301 seconds
+
+	BMS2_spmf.txt
+		Total time taken for Basic Apriori= 0.18675875663757324 seconds
+		Total time taken for Apriori with Hash Mapping= 3.8645527362823486 seconds
+		Total time taken for FP Growth= 0.5378656387329102 seconds
+
+	MSNBC.txt
+		Total time taken for Basic Apriori= 12.381566762924194 seconds
+		Total time taken for Apriori with Hash Mapping= 10.221471309661865 seconds
+		Total time taken for FP Growth= 0.8272049427032471 seconds
+
+-------------------------------------------------------------------------------------
+
+For Minimum Support = 10%:
+
+	BMS1_spmf.txt
+		Total time taken for Basic Apriori= 0.09195780754089355 seconds
+		Total time taken for Apriori with Hash Mapping= 1.2956795692443848 seconds
+		Total time taken for FP Growth= 0.30190372467041016 seconds
+
+	BMS2_spmf.txt
+		Total time taken for Basic Apriori= 0.1815943717956543 seconds
+		Total time taken for Apriori with Hash Mapping= 3.9320201873779297 seconds
+		Total time taken for FP Growth= 0.5301475524902344 seconds
+
+	MSNBC.txt
+		Total time taken for Basic Apriori= 4.912920951843262 seconds
+		Total time taken for Apriori with Hash Mapping= 3.4259331226348877 seconds
+		Total time taken for FP Growth= 0.676424503326416 seconds
+
+-------------------------------------------------------------------------------------
